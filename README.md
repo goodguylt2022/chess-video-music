@@ -24,4 +24,5 @@ Most likely you will also need to install [GTK Runtime](https://github.com/tscho
 | `--b_king` | Note for black king. | `Ab5` |
 | `--b_pawn` | Note for black pawn. | `Bb5` |
 | `--nocleanup` | Do not delete intermediate files. | `False` |
+| `--nomargin` | Do not include the margin with coordinates. | `False` |
 
