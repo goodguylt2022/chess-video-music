@@ -14,7 +14,7 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(description="Generate chess music and video from PGN input.")
     parser.add_argument("--instrument", type=str, default="piano", help="Instrument to use for audio.")
-    parser.add_argument("--p_time", default=0.4, help="Duration of each half-move.")
+    parser.add_argument("--p_time", type=float, default=0.4, help="Duration of each half-move.")
     parser.add_argument("--w_bishop", type=str, default="Eb4", help="Note for white bishop.")
     parser.add_argument("--w_rook", type=str, default="F4", help="Note for white rook.")
     parser.add_argument("--w_knight", type=str, default="G4", help="Note for white knight.")
@@ -28,6 +28,7 @@ def main():
     parser.add_argument("--b_king", type=str, default="Ab5", help="Note for black king.")
     parser.add_argument("--b_pawn", type=str, default="Bb5", help="Note for black pawn.")
     parser.add_argument("--nocleanup", action="store_true", help="Do not delete intermediate files.")
+    parser.add_argument("--nomargin", action="store_true", help="Do not add margin with coordinates.")
     args = parser.parse_args()
     playback_settings.recording_file_path = 'chess_music.wav'
     session = Session()
@@ -38,7 +39,6 @@ def main():
         instrument = session.new_part("piano")
     session.start_transcribing()
     p_time = args.p_time
-    #Parametrai
     w_bishop = args.w_bishop
     w_rook = args.w_rook
     w_knight = args.w_knight
@@ -75,6 +75,12 @@ def main():
         if '.' in move:
             continue
         m_counter += 1
+        if 'O-O-O' in move or 'O-O' in move or '0-0-0' in move or '0-0' in move:
+            if m_counter % 2 == 1:
+                notes.append(w_king)
+            else:
+                notes.append(b_king)
+            continue           
         for i in move:
             if counter == 0:
                 if i == 'B':
@@ -114,13 +120,20 @@ def main():
     c_counter = 1
     board = chess.Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     previous_move = None
+    print("Generating video frames...")
     for m in pgn:
         if (c_counter-1)%3 != 0 and c_counter != 1:
             filename = f"board_{c_counter}.svg"
             if c_counter!=1:
-                board_svg = chess.svg.board(board, lastmove=previous_move, size=1000)
+                if not args.nomargin:
+                    board_svg = chess.svg.board(board, lastmove=previous_move, size=1000)
+                else:
+                    board_svg = chess.svg.board(board, lastmove=previous_move, size=1000, coordinates=False)
             else:
-                board_svg = chess.svg.board(board, size=1000)
+                if not args.nomargin:
+                    board_svg = chess.svg.board(board, size=1000)
+                else:
+                    board_svg = chess.svg.board(board, size=1000, coordinates=False)
             previous_move = board.parse_san(m)
             board.push_san(m)
             with open(filename, "w", encoding="utf-8") as f:
@@ -130,7 +143,10 @@ def main():
             renderPM.drawToFile(drawing, f"board_{c_counter}.png", fmt="PNG")
             cleanup.append(f"board_{c_counter}.png")
         c_counter += 1
-    board_svg = chess.svg.board(board, lastmove=previous_move, size=1000)
+    if not args.nomargin:
+        board_svg = chess.svg.board(board, lastmove=previous_move, size=1000)
+    else:
+        board_svg = chess.svg.board(board, lastmove=previous_move, size=1000, coordinates=False)
     filename = f"board_{c_counter}.svg"
     with open(filename, "w", encoding="utf-8") as f:
         f.write(board_svg)
