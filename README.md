@@ -1,7 +1,7 @@
 # Chess videos with music
 Sharing your favorite chess games with your friends or on social media? Why not share it in a video format where the music is generated from the game as well! This repository contains a python script which creates a video and unique music based on the game from the game moves.
 # How does it work?
-The script takes the game's PGN (important that you enter it without headers, only the moves themselves) you enter as input and then generates music. Each piece (white and black pieces are different) is assigned a musical note. When that piece moves the note assigned is played. All the notes can be customized (see **Arguments**). Then, the Board states are generated in SVG thanks to python-chess and converted into PNG. Finally all the is joined into an MP4 file with moviepy.
+The script takes the game's PGN (important that you enter it without headers, only the moves themselves) you enter as input and then generates music. Each piece (white and black pieces are different) is assigned a musical note. When that piece moves the note assigned is played. All the notes can be customized (see **Arguments**). Then, the Board states are generated in SVG thanks to python-chess and converted into PNG. Finally all the parts are joined into an MP4 file with moviepy.
 # Requirements
 Run this pip command to install required python libraries:
 `pip install python-chess svglib reportlab moviepy scamp scamp_extensions clockblocks python-rtmidi numpy decorator proglog`
